@@ -6,53 +6,55 @@
 
 <script>
 import "../../../three.js-r57/build/three";
-var scene = new THREE.Scene();
-var geometry = new THREE.SphereGeometry(10, 20, 32);
-var material = new THREE.MeshLambertMaterial({
-  color: 0x00ff00,
-});
-var mesh = new THREE.Mesh(geometry, material);
+import * as THREE from "three/build/three.module";
 
-var point = new THREE.PointLight(0xfffccc);
-point.position.set(400, 200, 300);
 
-var width = window.innerWidth;
-var height = window.innerHeight;
-var k = width / height;
-var s = 100;
-var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-camera.position.set(100, 200, 300);
-camera.lookAt(scene.position);
-
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize(width, height);
-renderer.setClearColor(0xb9d3ff, 0);
-document.body.appendChild(renderer.domElement);
-
-// 辅助坐标系
-var axisHelper = new THREE.AxisHelper(250);
-scene.add(mesh, point, axisHelper);
-var controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象（鼠标控制）
-let T0 = new Date(); //上次时间
 export default {
   data() {
     return {
-     secne:null,
-     geometry:null,
-     material:null,
-     mesh:null,
-     point:null,
-     
+      secne: null,
+      geometry: null,
+      material: null,
+      camera: null,
+      mesh: null,
+      point: null,
+      width: null,
+      height: null,
+      renderer: null,
+      axisHelper: null,
+      controls: null,
     };
   },
-
-  created() {
-    this.aa();
-    this.randomizeMatrix();
-    this.re();
-  },
   methods: {
- 
+    init: function () {
+      this.scene = new THREE.Scene();
+      this.geometry = new THREE.SphereGeometry(10, 20, 32);
+      this.material = new THREE.MeshLambertMaterial({
+        color: 0x00ff00,
+      });
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+      this.point = new THREE.PointLight(0xfffccc);
+      this.point.position.set(400, 200, 300);
+
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      var k = this.width / this.height;
+      var s = 100;
+      this.camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+      this.camera.position.set(100, 200, 300);
+      this.camera.lookAt(scene.position);
+
+      this.renderer = new THREE.WebGLRenderer();
+      this.renderer.setSize(this.width, this.height);
+      this.renderer.setClearColor(0xb9d3ff, 0);
+      document.body.appendChild(this.renderer.domElement);
+
+      // 辅助坐标系
+      this.axisHelper = new THREE.AxisHelper(250);
+      this.scene.add(this.mesh, this.point, this.axisHelper);
+      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement); //创建控件对象（鼠标控制）
+    },
     randomizeMatrix(matrix, randomSize, distance) {
       let position = new THREE.Vector3();
       let rotation = new THREE.Euler();
@@ -77,17 +79,18 @@ export default {
     },
     re() {
       let T0 = new Date(); //上次时间
-
       let T1 = new Date(); //本次时间
       let t = T1 - T0; //时间差
       T0 = T1; //把本次时间赋值给上次时间
-      renderer.render(scene, camera); //执行渲染操作
-      mesh.rotateY(0.001 * t); //旋转角速度0.001弧度每毫秒
+      this.renderer.render(this.scene, this.camera); //执行渲染操作
       requestAnimationFrame(this.re);
     },
   },
-
-  watch: {},
+  mounted() {
+    this.aa();
+    this.randomizeMatrix();
+    this.re();
+  },
 };
 </script>
 
